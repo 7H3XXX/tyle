@@ -34,6 +34,7 @@ export async function POST(request: Request) {
   const submission: Submission = {
     id: crypto.randomUUID(),
     questionnaireId: questionnaire.id,
+    mode: parsed.value.mode,
     createdAt: new Date().toISOString(),
     answers: parsed.value.answers,
     totalSelected: score.total,
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("[api/responses] failed to persist submission", {
       submissionId: submission.id,
+      mode: submission.mode,
       error: err instanceof Error ? err.message : String(err),
     });
     return error(503, "storage_unavailable");

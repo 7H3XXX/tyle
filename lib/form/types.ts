@@ -53,6 +53,12 @@ export type ScoreResult = {
   domains: Record<string, DomainScore>;
 };
 
+/**
+ * `live` responses feed the real statistics. `test` responses come from the admin preview,
+ * are stored separately and never mix into live analytics.
+ */
+export type SubmissionMode = "live" | "test";
+
 /** Optional, anonymous timing data. Structured so section-level events can be added later. */
 export type SubmissionTiming = {
   totalMs?: number;
@@ -61,6 +67,7 @@ export type SubmissionTiming = {
 export type Submission = {
   id: string;
   questionnaireId: string;
+  mode: SubmissionMode;
   createdAt: string;
   answers: Answers;
   totalSelected: number;

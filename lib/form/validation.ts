@@ -1,7 +1,8 @@
-import type { Answers, Questionnaire, SubmissionTiming } from "./types";
+import type { Answers, Questionnaire, SubmissionMode, SubmissionTiming } from "./types";
 
 export type ParsedSubmissionRequest = {
   answers: Answers;
+  mode: SubmissionMode;
   timing?: SubmissionTiming;
 };
 
@@ -16,9 +17,10 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Validates an untrusted `{ answers, timing? }` payload.
+ * Validates an untrusted `{ answers, mode?, timing? }` payload.
  * Malformed shapes are rejected; unknown section or choice IDs are dropped.
  * Returned answers contain every section, in questionnaire order.
+ * The mode defaults to "live"; only an explicit "test" routes to test storage.
  */
 export function parseSubmissionRequest(
   body: unknown,
@@ -58,5 +60,8 @@ export function parseSubmissionRequest(
     }
   }
 
-  return { ok: true, value: { answers, timing } };
+  // Anything other than an explicit "test" is a live response.
+  const mode: SubmissionMode = body.mode === "test" ? "test" : "live";
+
+  return { ok: true, value: { answers, mode, timing } };
 }

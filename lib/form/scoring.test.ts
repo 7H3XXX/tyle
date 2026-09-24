@@ -104,6 +104,18 @@ describe("parseSubmissionRequest", () => {
     expect(calculateScore(r.value.answers, questionnaire).total).toBe(2);
   });
 
+  it("treats only an explicit \"test\" mode as test", () => {
+    const mode = (value: unknown) => {
+      const r = parseSubmissionRequest({ answers: {}, mode: value }, questionnaire);
+      return r.ok ? r.value.mode : null;
+    };
+    expect(mode("test")).toBe("test");
+    expect(mode(undefined)).toBe("live");
+    expect(mode("live")).toBe("live");
+    expect(mode("TEST")).toBe("live");
+    expect(mode(true)).toBe("live");
+  });
+
   it("keeps only sane timing", () => {
     const ok = parseSubmissionRequest({ answers: {}, timing: { totalMs: 1234.4 } }, questionnaire);
     expect(ok.ok && ok.value.timing).toEqual({ totalMs: 1234 });
@@ -116,6 +128,7 @@ describe("aggregate", () => {
   const submission = (answers: Answers): Submission => ({
     id: crypto.randomUUID(),
     questionnaireId: questionnaire.id,
+    mode: "live",
     createdAt: new Date().toISOString(),
     answers,
     totalSelected: -1, // stored totals are not trusted by the dashboard
