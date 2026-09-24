@@ -20,7 +20,7 @@ export default async function AdminPage() {
 
   let submissions: Submission[];
   try {
-    submissions = await listSubmissions();
+    submissions = await listSubmissions("live");
   } catch (error) {
     console.error("[admin] failed to load submissions", error);
     return (

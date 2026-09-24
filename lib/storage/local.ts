@@ -5,21 +5,23 @@ import path from "node:path";
 import type { Submission } from "@/lib/form/types";
 import type { SubmissionStore } from "./types";
 
-/** Development-only store: one JSON file per submission in .data/submissions. */
-const DIR = path.join(process.cwd(), ".data", "submissions");
+/** Development-only store: one JSON file per submission in .data/{namespace}. */
+const ROOT = path.join(process.cwd(), ".data");
+
+const dir = (namespace: string) => path.join(ROOT, namespace);
 
 export const localStore: SubmissionStore = {
-  async save(submission) {
-    await mkdir(DIR, { recursive: true });
-    await writeFile(path.join(DIR, `${submission.id}.json`), JSON.stringify(submission), {
+  async save(namespace, submission) {
+    await mkdir(dir(namespace), { recursive: true });
+    await writeFile(path.join(dir(namespace), `${submission.id}.json`), JSON.stringify(submission), {
       flag: "wx",
     });
   },
 
-  async list() {
+  async list(namespace) {
     let files: string[];
     try {
-      files = await readdir(DIR);
+      files = await readdir(dir(namespace));
     } catch {
       return [];
     }
@@ -28,7 +30,7 @@ export const localStore: SubmissionStore = {
         .filter((f) => f.endsWith(".json"))
         .map(async (f) => {
           try {
-            return JSON.parse(await readFile(path.join(DIR, f), "utf8")) as Submission;
+            return JSON.parse(await readFile(path.join(dir(namespace), f), "utf8")) as Submission;
           } catch (error) {
             console.error("[storage:local] failed to read", f, error);
             return null;
@@ -38,9 +40,9 @@ export const localStore: SubmissionStore = {
     return docs.filter((d): d is Submission => d !== null);
   },
 
-  async get(id) {
+  async get(namespace, id) {
     try {
-      return JSON.parse(await readFile(path.join(DIR, `${id}.json`), "utf8")) as Submission;
+      return JSON.parse(await readFile(path.join(dir(namespace), `${id}.json`), "utf8")) as Submission;
     } catch {
       return null;
     }

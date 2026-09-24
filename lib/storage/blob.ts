@@ -4,11 +4,12 @@ import { get, list, put } from "@vercel/blob";
 import type { Submission } from "@/lib/form/types";
 import type { SubmissionStore } from "./types";
 
-const PREFIX = "submissions/";
 const READ_CONCURRENCY = 16;
 
-async function readJson(pathname: string): Promise<unknown> {
-  const result = await get(pathname, { access: "private" });
+const pathname = (namespace: string, id: string) => `${namespace}/${id}.json`;
+
+async function readJson(path: string): Promise<unknown> {
+  const result = await get(path, { access: "private" });
   if (!result || result.statusCode !== 200) return null;
   return new Response(result.stream).json();
 }
@@ -30,10 +31,10 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
-/** One private, immutable JSON object per submission: submissions/{id}.json */
+/** One private, immutable JSON object per submission: {namespace}/{id}.json */
 export const blobStore: SubmissionStore = {
-  async save(submission) {
-    await put(`${PREFIX}${submission.id}.json`, JSON.stringify(submission), {
+  async save(namespace, submission) {
+    await put(pathname(namespace, submission.id), JSON.stringify(submission), {
       access: "private",
       contentType: "application/json",
       addRandomSuffix: false,
@@ -41,27 +42,27 @@ export const blobStore: SubmissionStore = {
     });
   },
 
-  async list() {
-    const pathnames: string[] = [];
+  async list(namespace) {
+    const paths: string[] = [];
     let cursor: string | undefined;
     do {
-      const page = await list({ prefix: PREFIX, cursor, limit: 1000 });
-      pathnames.push(...page.blobs.map((b) => b.pathname));
+      const page = await list({ prefix: `${namespace}/`, cursor, limit: 1000 });
+      paths.push(...page.blobs.map((b) => b.pathname));
       cursor = page.hasMore ? page.cursor : undefined;
     } while (cursor);
 
-    const docs = await mapWithConcurrency(pathnames, READ_CONCURRENCY, async (p) => {
+    const docs = await mapWithConcurrency(paths, READ_CONCURRENCY, async (path) => {
       try {
-        return (await readJson(p)) as Submission | null;
+        return (await readJson(path)) as Submission | null;
       } catch (error) {
-        console.error("[storage:blob] failed to read", p, error);
+        console.error("[storage:blob] failed to read", path, error);
         return null;
       }
     });
     return docs.filter((d): d is Submission => d !== null);
   },
 
-  async get(id) {
-    return (await readJson(`${PREFIX}${id}.json`)) as Submission | null;
+  async get(namespace, id) {
+    return (await readJson(pathname(namespace, id))) as Submission | null;
   },
 };

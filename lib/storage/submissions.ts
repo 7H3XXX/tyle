@@ -1,11 +1,17 @@
 import "server-only";
 
-import type { Submission } from "@/lib/form/types";
+import type { Submission, SubmissionMode } from "@/lib/form/types";
 import { blobStore } from "./blob";
 import { localStore } from "./local";
 import type { SubmissionStore } from "./types";
 
 const ID_PATTERN = /^[0-9a-f-]{36}$/;
+
+/** Live and test data live under disjoint prefixes, so a listing can never mix them. */
+const NAMESPACES: Record<SubmissionMode, string> = {
+  live: "submissions",
+  test: "test-submissions",
+};
 
 /**
  * Vercel Blob when configured; a local file store in development.
@@ -20,15 +26,16 @@ function store(): SubmissionStore {
 }
 
 export function saveSubmission(submission: Submission): Promise<void> {
-  return store().save(submission);
+  return store().save(NAMESPACES[submission.mode], submission);
 }
 
-export async function listSubmissions(): Promise<Submission[]> {
-  const submissions = await store().list();
+/** Newest first. */
+export async function listSubmissions(mode: SubmissionMode): Promise<Submission[]> {
+  const submissions = await store().list(NAMESPACES[mode]);
   return submissions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export async function getSubmission(id: string): Promise<Submission | null> {
+export async function getSubmission(id: string, mode: SubmissionMode): Promise<Submission | null> {
   if (!ID_PATTERN.test(id)) return null;
-  return store().get(id);
+  return store().get(NAMESPACES[mode], id);
 }
