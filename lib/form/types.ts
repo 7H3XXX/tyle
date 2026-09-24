@@ -23,6 +23,7 @@ export type FormBranding = {
   /** Text shown in the placeholder mark when no logo asset is provided. */
   logoText?: string;
   coverImageUrl?: string;
+  /** Brand colour; overrides the shadcn `--primary` and `--ring` tokens for this form. */
   accentColor?: string;
 };
 

@@ -1,7 +1,8 @@
+import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { maximumScore } from "@/lib/form/scoring";
 import type { Questionnaire } from "@/lib/form/types";
-import { Button } from "./Button";
 
 type CoverScreenProps = {
   questionnaire: Questionnaire;
@@ -33,26 +34,24 @@ export function CoverScreen({ questionnaire, onStart }: CoverScreenProps) {
       </h1>
 
       {description && (
-        <p className="mt-5 max-w-136 text-pretty text-lg leading-relaxed text-muted">
+        <p className="mt-5 max-w-136 text-pretty text-lg leading-relaxed text-muted-foreground">
           {description}
         </p>
       )}
 
-      <p className="mt-6 text-sm text-muted">
+      <p className="mt-6 text-sm text-muted-foreground">
         {sections.length} thèmes · {maximumScore(questionnaire)} affirmations · Réponses anonymes
       </p>
 
       <div className="mt-10">
-        <Button onClick={onStart} className="w-full px-7 sm:w-auto">
+        <Button size="xl" onClick={onStart} className="w-full sm:w-auto">
           Commencer
-          <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" className="size-4">
-            <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ArrowRightIcon data-icon="inline-end" />
         </Button>
       </div>
 
       {disclaimer && (
-        <p className="mt-12 max-w-136 text-[0.8125rem] leading-relaxed text-muted">{disclaimer}</p>
+        <p className="mt-12 max-w-136 text-[0.8125rem] leading-relaxed text-muted-foreground">{disclaimer}</p>
       )}
     </div>
   );

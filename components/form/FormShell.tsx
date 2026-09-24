@@ -70,8 +70,9 @@ export function FormShell({ questionnaire, mode = "live", notice }: FormShellPro
     }
   }
 
-  const accentStyle = branding.accentColor
-    ? ({ "--accent": branding.accentColor } as CSSProperties)
+  // A per-form brand colour drives shadcn's primary and focus-ring tokens.
+  const brandStyle = branding.accentColor
+    ? ({ "--primary": branding.accentColor, "--ring": branding.accentColor } as CSSProperties)
     : undefined;
   const animation =
     step === -1
@@ -81,7 +82,7 @@ export function FormShell({ questionnaire, mode = "live", notice }: FormShellPro
         : "step-backward";
 
   return (
-    <div style={accentStyle} className="flex min-h-svh flex-col overflow-x-clip">
+    <div style={brandStyle} className="flex min-h-svh flex-col overflow-x-clip">
       {notice}
       <header className="mx-auto flex w-full max-w-180 items-center gap-5 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8 sm:pt-8">
         <BrandMark branding={branding} />

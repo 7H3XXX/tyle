@@ -1,5 +1,8 @@
+import { ArrowRightIcon, ChevronLeftIcon, CircleAlertIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import type { FormState } from "./formReducer";
-import { Button, Spinner } from "./Button";
 
 type StepNavigationProps = {
   isLast: boolean;
@@ -17,37 +20,29 @@ export function StepNavigation({ isLast, status, onBack, onNext }: StepNavigatio
   if (failed) nextLabel = "Réessayer";
 
   return (
-    <div className="mt-auto pt-8">
+    <div className="mt-auto flex flex-col gap-5 pt-8">
       {failed && (
-        <div
-          role="alert"
-          className="mb-5 rounded-xl border border-danger/30 px-4 py-3 text-[0.9375rem] leading-relaxed"
-        >
-          Impossible d&apos;enregistrer votre réponse pour le moment.
-          <br />
-          Veuillez réessayer.
-        </div>
+        <Alert variant="destructive">
+          <CircleAlertIcon />
+          <AlertTitle>Impossible d&apos;enregistrer votre réponse pour le moment.</AlertTitle>
+          <AlertDescription>Veuillez réessayer.</AlertDescription>
+        </Alert>
       )}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" onClick={onBack} disabled={submitting} className="-ml-2 px-3">
-          <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" className="size-4">
-            <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+        <Button variant="ghost" size="xl" onClick={onBack} disabled={submitting} className="-ml-3">
+          <ChevronLeftIcon data-icon="inline-start" />
           Retour
         </Button>
         <Button
+          size="xl"
           onClick={onNext}
           disabled={submitting}
           aria-busy={submitting || undefined}
           className="ml-auto min-w-40 flex-1 sm:flex-none"
         >
-          {submitting && <Spinner />}
+          {submitting && <Spinner data-icon="inline-start" aria-hidden="true" />}
           {nextLabel}
-          {!submitting && !failed && (
-            <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" className="size-4">
-              <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
+          {!submitting && !failed && <ArrowRightIcon data-icon="inline-end" />}
         </Button>
       </div>
     </div>

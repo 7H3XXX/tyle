@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { cn } from "@/lib/cn";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 
 type CheckboxOptionProps = {
   sectionId: string;
@@ -10,6 +11,7 @@ type CheckboxOptionProps = {
   onToggle: (sectionId: string, choiceId: string) => void;
 };
 
+/** shadcn "choice card": the whole card is the label, so the full surface toggles the checkbox. */
 export const CheckboxOption = memo(function CheckboxOption({
   sectionId,
   choiceId,
@@ -18,50 +20,25 @@ export const CheckboxOption = memo(function CheckboxOption({
   disabled,
   onToggle,
 }: CheckboxOptionProps) {
+  const id = `choice-${choiceId}`;
+
   return (
-    <label
-      className={cn(
-        "relative flex min-h-14 cursor-pointer select-none items-center gap-4 rounded-xl border px-4 py-3.5",
-        "transition-[background-color,border-color,transform] duration-200 ease-out active:scale-[0.992]",
-        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent",
-        checked
-          ? "border-accent bg-accent-soft"
-          : "border-border hover:border-muted/40 hover:bg-subtle",
-        disabled && "pointer-events-none opacity-60",
-      )}
+    <FieldLabel
+      htmlFor={id}
+      className="rounded-xl *:data-[slot=field]:min-h-14 *:data-[slot=field]:px-4 *:data-[slot=field]:py-3.5"
     >
-      <input
-        type="checkbox"
-        className="sr-only"
-        checked={checked}
-        disabled={disabled}
-        onChange={() => onToggle(sectionId, choiceId)}
-      />
-      <span
-        aria-hidden="true"
-        className={cn(
-          "flex size-6 shrink-0 items-center justify-center rounded-md border-[1.5px] transition-colors duration-200",
-          checked ? "border-accent bg-accent text-accent-foreground" : "border-muted/50 bg-background",
-        )}
-      >
-        <svg
-          viewBox="0 0 16 16"
-          fill="none"
-          className={cn(
-            "size-4 transition-[opacity,transform] duration-200 ease-out",
-            checked ? "scale-100 opacity-100" : "scale-50 opacity-0",
-          )}
-        >
-          <path
-            d="M3.5 8.5l3 3 6-7"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="text-[1.0625rem] leading-snug">{label}</span>
-    </label>
+      <Field orientation="horizontal" data-disabled={disabled || undefined} className="items-center gap-4">
+        <Checkbox
+          id={id}
+          checked={checked}
+          disabled={disabled}
+          onCheckedChange={() => onToggle(sectionId, choiceId)}
+          className="size-5"
+        />
+        <FieldContent>
+          <span className="text-[1.0625rem] font-normal leading-snug">{label}</span>
+        </FieldContent>
+      </Field>
+    </FieldLabel>
   );
 });

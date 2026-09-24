@@ -8,8 +8,8 @@ export function BrandMark({ branding }: { branding: FormBranding }) {
       <Image
         src={branding.logoUrl}
         alt=""
-        width={36}
-        height={36}
+        width={96}
+        height={96}
         unoptimized
         className="size-24 shrink-0 rounded-lg object-contain"
       />

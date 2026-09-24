@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import type { Section } from "@/lib/form/types";
 import { CheckboxOption } from "./CheckboxOption";
 
@@ -24,24 +25,22 @@ type SectionStepProps = {
 };
 
 export function SectionStep({ section, selected, disabled, onToggle }: SectionStepProps) {
-  const hintId = `${section.id}-hint`;
   const count = selected.length;
+  const hintId = `${section.id}-hint`;
 
   return (
-    <fieldset aria-describedby={hintId} className="min-w-0">
-      <legend className="w-full">
+    <FieldSet aria-describedby={hintId} className="min-w-0">
+      <FieldLegend className="w-full">
         <h1
           tabIndex={-1}
           className="text-[2rem] font-semibold leading-[1.15] tracking-tight outline-none sm:text-[2.5rem]"
         >
           {breakableTitle(section.title)}
         </h1>
-      </legend>
-      <p id={hintId} className="mt-3 text-base leading-relaxed text-muted">
-        Cochez ce qui vous correspond, ou rien, puis continuez.
-      </p>
+      </FieldLegend>
+      <FieldDescription id={hintId}>Cochez ce qui vous correspond, ou rien, puis continuez.</FieldDescription>
 
-      <div className="mt-8 flex flex-col gap-2.5">
+      <FieldGroup data-slot="checkbox-group" className="mt-4 gap-2.5">
         {section.choices.map((choice) => (
           <CheckboxOption
             key={choice.id}
@@ -53,11 +52,11 @@ export function SectionStep({ section, selected, disabled, onToggle }: SectionSt
             onToggle={onToggle}
           />
         ))}
-      </div>
+      </FieldGroup>
 
-      <p aria-live="polite" className="mt-4 h-5 text-sm tabular-nums text-muted">
+      <p aria-live="polite" className="h-5 text-sm tabular-nums text-muted-foreground">
         {count > 0 && `${count} sur ${section.choices.length} sélectionnée${count > 1 ? "s" : ""}`}
       </p>
-    </fieldset>
+    </FieldSet>
   );
 }

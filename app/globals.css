@@ -1,55 +1,105 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/* Dark mode follows the OS setting: no theme toggle, no client JS. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/*
+ * shadcn semantic tokens. The brand colour is --primary (overridable per form via
+ * branding.accentColor); --accent is shadcn's subtle hover surface, not the brand.
+ */
 :root {
+  --radius: 0.75rem;
   --background: #fbfaf7;
   --foreground: #1c1b18;
-  --muted: #6b6960;
-  --subtle: #f2f0ea;
+  --card: #fefdfb;
+  --card-foreground: #1c1b18;
+  --popover: #fefdfb;
+  --popover-foreground: #1c1b18;
+  --primary: #2f5b4f;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f0ea;
+  --secondary-foreground: #1c1b18;
+  --muted: #f2f0ea;
+  --muted-foreground: #6b6960;
+  --accent: #f2f0ea;
+  --accent-foreground: #1c1b18;
+  --destructive: #a33a2c;
   --border: #e4e1d8;
-  --accent: #2f5b4f;
-  --accent-foreground: #ffffff;
-  --danger: #a33a2c;
+  --input: #d6d2c6;
+  --ring: #2f5b4f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #141412;
     --foreground: #eeece6;
-    --muted: #a19f96;
-    --subtle: #1f1f1c;
+    --card: #1a1a18;
+    --card-foreground: #eeece6;
+    --popover: #1a1a18;
+    --popover-foreground: #eeece6;
+    --primary: #8cc2ae;
+    --primary-foreground: #0f1f1a;
+    --secondary: #242421;
+    --secondary-foreground: #eeece6;
+    --muted: #242421;
+    --muted-foreground: #a19f96;
+    --accent: #242421;
+    --accent-foreground: #eeece6;
+    --destructive: #f08b7c;
     --border: #33322e;
-    --accent: #8cc2ae;
-    --accent-foreground: #0f1f1a;
-    --danger: #f08b7c;
+    --input: #3d3c37;
+    --ring: #8cc2ae;
   }
 }
 
 @theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-heading: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
-  --color-subtle: var(--subtle);
-  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent-soft: color-mix(in oklab, var(--accent) 9%, var(--background));
-  --color-danger: var(--danger);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-}
-
-::selection {
-  background: color-mix(in oklab, var(--accent) 22%, transparent);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
 }
 
 /* Step transitions: the incoming step slides in from the direction of travel. */
