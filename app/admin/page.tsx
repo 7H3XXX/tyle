@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
 import { Dashboard } from "@/components/admin/Dashboard";
 import { aggregate } from "@/lib/analytics/aggregate";
-import { checkAdminAccess } from "@/lib/auth/admin";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { questionnaire } from "@/lib/form/questionnaire";
 import type { Submission } from "@/lib/form/types";
 import { listSubmissions } from "@/lib/storage/submissions";
 
 export const metadata: Metadata = {
   title: "Tableau de bord",
-  robots: { index: false, follow: false },
 };
 
 export default async function AdminPage() {
-  // Defense in depth: proxy.ts gates this route; re-check in case the matcher changes.
-  const access = checkAdminAccess((await headers()).get("authorization"));
-  if (access !== "granted") notFound();
+  await requireAdmin();
 
   let submissions: Submission[];
   try {
