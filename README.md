@@ -18,7 +18,8 @@ npm run lint && npm run build
 | Questions, thèmes, tranches de résultat, logo/couverture/couleur | `lib/form/questionnaire.ts` |
 | Calcul du score | `lib/form/scoring.ts` |
 | Stockage (Vercel Blob / local) | `lib/storage/` |
-| Couleurs (variables CSS) | `app/globals.css` |
+| Couleurs (tokens shadcn ; la couleur de marque est `--primary`) | `app/globals.css` |
+| Composants UI (shadcn/ui, Base UI) | `components/ui/` — ajout via `npx shadcn@latest add <nom>` |
 
 ## Aperçu et réponses de test
 

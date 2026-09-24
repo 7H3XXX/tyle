@@ -1,6 +1,6 @@
 # 0006. No UI kit or motion library; CSS tokens and keyframes
 
-- Status: Accepted
+- Status: Superseded by [0008](0008-adopt-shadcn-ui.md)
 - Date: 2026-09-24
 
 ## Context
