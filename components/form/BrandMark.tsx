@@ -11,7 +11,7 @@ export function BrandMark({ branding }: { branding: FormBranding }) {
         width={36}
         height={36}
         unoptimized
-        className="size-9 shrink-0 rounded-lg object-contain"
+        className="size-24 shrink-0 rounded-lg object-contain"
       />
     );
   }

@@ -21,7 +21,7 @@ export function CoverScreen({ questionnaire, onStart }: CoverScreenProps) {
           height={720}
           unoptimized
           priority
-          className="mb-10 aspect-[2/1] w-full rounded-2xl object-cover"
+          className="mb-10 aspect-square w-full rounded-2xl object-cover"
         />
       )}
 

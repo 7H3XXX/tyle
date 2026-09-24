@@ -18,6 +18,8 @@ export const questionnaire: Questionnaire = {
     "Cet outil d'auto-évaluation ne remplace pas un avis médical et ne constitue pas un diagnostic.",
   branding: {
     logoText: "M",
+    coverImageUrl: "/images/cover-conference.png",
+    logoUrl: "/images/iusty-logo.jpg",
   },
   sections: [
     section("energie", "Énergie", [
