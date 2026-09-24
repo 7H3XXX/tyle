@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbfaf7;
+  --foreground: #1c1b18;
+  --muted: #6b6960;
+  --subtle: #f2f0ea;
+  --border: #e4e1d8;
+  --accent: #2f5b4f;
+  --accent-foreground: #ffffff;
+  --danger: #a33a2c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #141412;
+    --foreground: #eeece6;
+    --muted: #a19f96;
+    --subtle: #1f1f1c;
+    --border: #33322e;
+    --accent: #8cc2ae;
+    --accent-foreground: #0f1f1a;
+    --danger: #f08b7c;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: color-mix(in oklab, var(--accent) 9%, var(--background));
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+/* Step transitions: the incoming step slides in from the direction of travel. */
+@keyframes step-in-forward {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes step-in-backward {
+  from { opacity: 0; transform: translateX(-28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.step-forward { animation: step-in-forward 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.step-backward { animation: step-in-backward 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.step-fade { animation: fade-in 220ms ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .step-forward,
+  .step-backward {
+    animation: fade-in 160ms ease-out both;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }
