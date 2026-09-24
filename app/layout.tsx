@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { questionnaire } from "@/lib/form/questionnaire";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <body className="min-h-svh bg-background font-sans text-foreground">{children}</body>
+    <html
+      lang="fr"
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+    >
+      <body className="min-h-svh bg-background font-sans text-foreground">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
