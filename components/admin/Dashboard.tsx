@@ -1,5 +1,16 @@
+import { FlaskConicalIcon, InboxIcon, RefreshCwIcon, SquarePenIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import type { Aggregate } from "@/lib/analytics/aggregate";
 import type { Questionnaire, SubmissionMode } from "@/lib/form/types";
 import { ChoiceFrequency } from "./ChoiceFrequency";
@@ -18,18 +29,38 @@ type DashboardProps = {
   children?: ReactNode;
 };
 
-const ACTION_LINK =
-  "rounded-lg px-3 py-2 text-sm font-medium hover:bg-subtle focus-visible:outline-2 focus-visible:outline-accent";
-
 function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-5">
       <header>
         <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-        {description && <p className="mt-1 text-sm text-muted">{description}</p>}
+        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       </header>
       {children}
     </section>
+  );
+}
+
+function NoResponses({ isTest }: { isTest: boolean }) {
+  return (
+    <Empty className="border">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">{isTest ? <FlaskConicalIcon /> : <InboxIcon />}</EmptyMedia>
+        <EmptyTitle>{isTest ? "Aucune réponse de test" : "Aucune réponse pour le moment"}</EmptyTitle>
+        <EmptyDescription>
+          {isTest
+            ? "Remplissez le questionnaire depuis l'aperçu, puis revenez ici pour voir ce qui a été enregistré."
+            : "Les statistiques apparaîtront dès la première réponse."}
+        </EmptyDescription>
+      </EmptyHeader>
+      {isTest && (
+        <EmptyContent>
+          <Link href="/admin/preview" className={buttonVariants()}>
+            Ouvrir l&apos;aperçu
+          </Link>
+        </EmptyContent>
+      )}
+    </Empty>
   );
 }
 
@@ -41,14 +72,17 @@ export function Dashboard({ data, questionnaire, mode, children }: DashboardProp
     <main className="mx-auto flex max-w-275 flex-col gap-14 px-5 py-10 sm:px-8 sm:py-14">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-muted">{questionnaire.title}</p>
+          <p className="text-sm text-muted-foreground">{questionnaire.title}</p>
           <h1 className="mt-1 text-[2rem] font-semibold tracking-tight">Tableau de bord</h1>
         </div>
         <div className="flex flex-wrap items-center gap-1">
-          <Link href="/admin/preview" className={ACTION_LINK}>
+          <Link href="/admin/preview" className={buttonVariants({ variant: "ghost" })}>
+            <SquarePenIcon data-icon="inline-start" />
             Aperçu du questionnaire
           </Link>
-          <a href={isTest ? "/admin?data=test" : "/admin"} className={ACTION_LINK}>
+          {/* Plain <a>: a full reload re-reads storage on this dynamic page. */}
+          <a href={isTest ? "/admin?data=test" : "/admin"} className={buttonVariants({ variant: "ghost" })}>
+            <RefreshCwIcon data-icon="inline-start" />
             Actualiser
           </a>
         </div>
@@ -57,14 +91,17 @@ export function Dashboard({ data, questionnaire, mode, children }: DashboardProp
       <div className="-mt-6 flex flex-col gap-4">
         <DataModeTabs current={mode} />
         {isTest && (
-          <p role="note" className="max-w-180 border-l-2 border-accent pl-4 text-sm leading-relaxed text-muted">
-            Réponses envoyées depuis l&apos;aperçu. Elles sont stockées à part et n&apos;apparaissent jamais dans
-            les statistiques réelles.
-          </p>
+          <Alert role="note" className="max-w-180">
+            <FlaskConicalIcon />
+            <AlertDescription>
+              Réponses envoyées depuis l&apos;aperçu. Elles sont stockées à part et n&apos;apparaissent jamais dans
+              les statistiques réelles.
+            </AlertDescription>
+          </Alert>
         )}
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
+      <dl className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
         <MetricCard label="Répondants" value={String(data.respondents)} />
         <MetricCard label="Score moyen" value={formatNumber(data.averageScore)} suffix={`/ ${max}`} />
         <MetricCard label="Score médian" value={formatNumber(data.medianScore)} suffix={`/ ${max}`} />
@@ -73,11 +110,7 @@ export function Dashboard({ data, questionnaire, mode, children }: DashboardProp
       </dl>
 
       {data.respondents === 0 ? (
-        <p className="text-muted">
-          {isTest
-            ? "Aucune réponse de test. Ouvrez l'aperçu, remplissez le questionnaire, puis revenez ici."
-            : "Aucune réponse pour le moment."}
-        </p>
+        <NoResponses isTest={isTest} />
       ) : (
         <>
           <div className="grid gap-14 lg:grid-cols-2">
@@ -104,7 +137,7 @@ export function Dashboard({ data, questionnaire, mode, children }: DashboardProp
 
       {children}
 
-      <p className="text-xs text-muted">
+      <p className="text-xs text-muted-foreground">
         Données descriptives issues d&apos;un questionnaire d&apos;auto-évaluation ; elles ne constituent pas des
         diagnostics.
       </p>

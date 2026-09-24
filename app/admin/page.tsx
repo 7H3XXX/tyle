@@ -23,7 +23,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     return (
       <main className="mx-auto max-w-275 px-5 py-16 sm:px-8">
         <h1 className="text-2xl font-semibold tracking-tight">Tableau de bord</h1>
-        <p role="alert" className="mt-4 text-muted">
+        <p role="alert" className="mt-4 text-muted-foreground">
           Impossible de charger les réponses pour le moment. Le questionnaire reste disponible.
           Rechargez la page pour réessayer.
         </p>
