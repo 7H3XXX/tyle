@@ -49,7 +49,8 @@ export function FormShell({ questionnaire, mode = "live", notice }: FormShellPro
     inFlight.current = true;
     dispatch({ type: "submit" });
     try {
-      const response = await fetch("/api/responses", {
+      // Absolute URL from origin: a page opened as https://user:pass@host/… can't fetch relative URLs.
+      const response = await fetch(new URL("/api/responses", window.location.origin), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
