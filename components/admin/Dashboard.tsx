@@ -1,7 +1,9 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Aggregate } from "@/lib/analytics/aggregate";
-import type { Questionnaire } from "@/lib/form/types";
+import type { Questionnaire, SubmissionMode } from "@/lib/form/types";
 import { ChoiceFrequency } from "./ChoiceFrequency";
+import { DataModeTabs } from "./DataModeTabs";
 import { DomainBreakdown } from "./DomainBreakdown";
 import { formatNumber, formatPercent } from "./format";
 import { MetricCard } from "./MetricCard";
@@ -11,7 +13,13 @@ import { ScoreDistribution } from "./ScoreDistribution";
 type DashboardProps = {
   data: Aggregate;
   questionnaire: Questionnaire;
+  mode: SubmissionMode;
+  /** Extra sections rendered after the statistics (e.g. the test record inspector). */
+  children?: ReactNode;
 };
+
+const ACTION_LINK =
+  "rounded-lg px-3 py-2 text-sm font-medium hover:bg-subtle focus-visible:outline-2 focus-visible:outline-accent";
 
 function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
@@ -25,8 +33,9 @@ function Panel({ title, description, children }: { title: string; description?: 
   );
 }
 
-export function Dashboard({ data, questionnaire }: DashboardProps) {
+export function Dashboard({ data, questionnaire, mode, children }: DashboardProps) {
   const max = data.maximum;
+  const isTest = mode === "test";
 
   return (
     <main className="mx-auto flex max-w-275 flex-col gap-14 px-5 py-10 sm:px-8 sm:py-14">
@@ -35,13 +44,25 @@ export function Dashboard({ data, questionnaire }: DashboardProps) {
           <p className="text-sm text-muted">{questionnaire.title}</p>
           <h1 className="mt-1 text-[2rem] font-semibold tracking-tight">Tableau de bord</h1>
         </div>
-        <a
-          href="/admin"
-          className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-subtle focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          Actualiser
-        </a>
+        <div className="flex flex-wrap items-center gap-1">
+          <Link href="/admin/preview" className={ACTION_LINK}>
+            Aperçu du questionnaire
+          </Link>
+          <a href={isTest ? "/admin?data=test" : "/admin"} className={ACTION_LINK}>
+            Actualiser
+          </a>
+        </div>
       </header>
+
+      <div className="-mt-6 flex flex-col gap-4">
+        <DataModeTabs current={mode} />
+        {isTest && (
+          <p role="note" className="max-w-180 border-l-2 border-accent pl-4 text-sm leading-relaxed text-muted">
+            Réponses envoyées depuis l&apos;aperçu. Elles sont stockées à part et n&apos;apparaissent jamais dans
+            les statistiques réelles.
+          </p>
+        )}
+      </div>
 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
         <MetricCard label="Répondants" value={String(data.respondents)} />
@@ -52,7 +73,11 @@ export function Dashboard({ data, questionnaire }: DashboardProps) {
       </dl>
 
       {data.respondents === 0 ? (
-        <p className="text-muted">Aucune réponse pour le moment.</p>
+        <p className="text-muted">
+          {isTest
+            ? "Aucune réponse de test. Ouvrez l'aperçu, remplissez le questionnaire, puis revenez ici."
+            : "Aucune réponse pour le moment."}
+        </p>
       ) : (
         <>
           <div className="grid gap-14 lg:grid-cols-2">
@@ -76,6 +101,8 @@ export function Dashboard({ data, questionnaire }: DashboardProps) {
           </Panel>
         </>
       )}
+
+      {children}
 
       <p className="text-xs text-muted">
         Données descriptives issues d&apos;un questionnaire d&apos;auto-évaluation ; elles ne constituent pas des
