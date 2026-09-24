@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useReducer, useRef, type CSSProperties } from "react";
-import type { Questionnaire, SubmissionResult } from "@/lib/form/types";
+import { useCallback, useEffect, useReducer, useRef, type CSSProperties, type ReactNode } from "react";
+import type { Questionnaire, SubmissionMode, SubmissionResult } from "@/lib/form/types";
 import { BrandMark } from "./BrandMark";
 import { CoverScreen } from "./CoverScreen";
 import { formReducer, initialFormState } from "./formReducer";
@@ -12,7 +12,15 @@ import { StepNavigation } from "./StepNavigation";
 
 const SUBMIT_TIMEOUT_MS = 15_000;
 
-export function FormShell({ questionnaire }: { questionnaire: Questionnaire }) {
+type FormShellProps = {
+  questionnaire: Questionnaire;
+  /** "test" submissions are stored apart from live data (admin preview). */
+  mode?: SubmissionMode;
+  /** Optional banner rendered above the form, e.g. the preview notice. */
+  notice?: ReactNode;
+};
+
+export function FormShell({ questionnaire, mode = "live", notice }: FormShellProps) {
   const { sections, branding } = questionnaire;
   const [state, dispatch] = useReducer(formReducer, sections.length, initialFormState);
   const inFlight = useRef(false);
@@ -46,6 +54,7 @@ export function FormShell({ questionnaire }: { questionnaire: Questionnaire }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           answers,
+          mode,
           timing: state.startedAt ? { totalMs: Date.now() - state.startedAt } : undefined,
         }),
         signal: AbortSignal.timeout(SUBMIT_TIMEOUT_MS),
@@ -73,6 +82,7 @@ export function FormShell({ questionnaire }: { questionnaire: Questionnaire }) {
 
   return (
     <div style={accentStyle} className="flex min-h-svh flex-col overflow-x-clip">
+      {notice}
       <header className="mx-auto flex w-full max-w-180 items-center gap-5 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8 sm:pt-8">
         <BrandMark branding={branding} />
         {section && (
